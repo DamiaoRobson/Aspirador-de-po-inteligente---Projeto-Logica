@@ -1,0 +1,36 @@
+MODULE main
+VAR
+    start: 8.. 20;
+    hora: 0.. 23;
+    robo: {desligado, limpando, carregando};
+    comodo_limpo: 0.. 5;
+    
+ASSIGN
+
+    init(start) := 8;
+    init(robo) := desligado;
+    init(comodo_limpo) := 0;
+    init(hora) := 0;
+ 
+    next(hora) := case
+                (hora < 23): hora + 1;
+                hora=23: 0;
+                TRUE: hora;
+            esac;          
+
+    next(robo) := case
+                robo=desligado & hora=(start -1): carregando;
+                comodo_limpo>0 & ((comodo_limpo mod 2)=1) &
+                robo=limpando & comodo_limpo<5: carregando;
+                comodo_limpo=5: desligado;
+                robo=carregando: limpando;
+                TRUE:robo;
+            esac;
+    
+    next(comodo_limpo) := case
+                robo=limpando & comodo_limpo<5:comodo_limpo + 1;
+                hora=0: 0;
+                TRUE: comodo_limpo;
+            esac;
+
+    next(start) := start;
